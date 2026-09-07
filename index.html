@@ -66,6 +66,17 @@
       map.invalidateSize();
     }, 200);
   });
+
+// Попап для определения координат по клику (потом мы его удалим)
+var popup = L.popup();
+map.on('click', function(e) {
+    let y = Math.round(e.latlng.lat);
+    let x = Math.round(e.latlng.lng);
+    popup
+        .setLatLng(e.latlng)
+        .setContent("Координаты точки: [" + y + ", " + x + "]")
+        .openOn(map);
+});
 </script>
 
 </body>
