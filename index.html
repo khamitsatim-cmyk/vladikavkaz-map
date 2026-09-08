@@ -82,7 +82,7 @@ map.on('click', function(e) {
 // ==========================================
 var mainRoutePoints = [
   // Формат: { coords: [Y, X], id: "название_для_кода", iconUrl: "путь_к_картинке" }
-  { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png" },
+  { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [420, 374], anchor: [210, 374] },
   { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
   { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
   { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
@@ -100,28 +100,18 @@ var mainRoutePoints = [
   // У последней строчки перед закрывающей скобкой ] запятая не ставится!
 ];
 
-// ==========================================
-// 2. ВЫВОД ТОЧЕК НА КАРТУ И НАСТРОЙКА КЛИКА
-// ==========================================
 mainRoutePoints.forEach(function(point) {
-  
-  // Создаем индивидуальную иконку для каждой точки
   var customIcon = L.icon({
     iconUrl: point.iconUrl,
-    iconSize: [40, 40], // Размеры вашей иконки в пикселях (Ширина, Высота). Поменяйте на свои, если иконки больше/меньше!
-    iconAnchor: [20, 40] // Точка, которой иконка "касается" координат. Обычно это середина низа (Половина ширины, Вся высота).
+    iconSize: point.size,      // берёт индивидуальный размер из объекта
+    iconAnchor: point.anchor   // берёт индивидуальную точку привязки
   });
 
-  // Добавляем маркер на карту
   var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
-
-  // Вешаем действие на клик по маркеру
-  marker.on('click', function() {
-    // Пока шторка не готова, выводим проверочное сообщение. 
-    // Потом мы заменим эту строчку на команду открытия шторки!
-    alert("Клик сработал! Это точка: " + point.id);
-  });
   
+  marker.on('click', function() {
+    alert("Клик: " + point.id);
+  });
 });
 </script>
 
