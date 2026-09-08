@@ -67,7 +67,7 @@
     }, 200);
   });
 
-  // Попап для определения координат
+  // Попап для определения координат по клику
   var popup = L.popup();
   map.on('click', function(e) {
     let y = Math.round(e.latlng.lat);
@@ -98,11 +98,8 @@
   ];
 
   // ==========================================
-  // 2. ВЫВОД ТОЧЕК И АГРЕССИВНЫЙ МАСШТАБ
+  // 2. ВЫВОД ТОЧЕК (ФИКСИРОВАННЫЙ РАЗМЕР)
   // ==========================================
-  var markersList = [];
-  var baseZoom = 4.8; 
-
   mainRoutePoints.forEach(function(point) {
     var defaultSize = point.size || [60, 53];
     var defaultAnchor = point.anchor || [defaultSize[0] / 2, defaultSize[1]];
@@ -115,40 +112,10 @@
 
     var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
 
-    marker.baseData = {
-      iconUrl: point.iconUrl,
-      size: defaultSize,
-      anchor: defaultAnchor
-    };
-
-    markersList.push(marker);
-
     marker.on('click', function() {
       alert("Клик: " + point.id);
     });
   });
-
-  function updateIconSizes() {
-    var currentZoom = map.getZoom();
-    
-    // Коэффициент 4.2 даёт мощный прирост размера при зуме от 4.8 до 6.0
-    var scale = Math.pow(4.2, currentZoom - baseZoom);
-
-    markersList.forEach(function(marker) {
-      var base = marker.baseData;
-      var newSize = [base.size[0] * scale, base.size[1] * scale];
-      var newAnchor = [base.anchor[0] * scale, base.anchor[1] * scale];
-
-      marker.setIcon(L.icon({
-        iconUrl: base.iconUrl,
-        iconSize: newSize,
-        iconAnchor: newAnchor
-      }));
-    });
-  }
-
-  updateIconSizes();
-  map.on('zoom', updateIconSizes);
 </script>
 
 </body>
