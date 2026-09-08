@@ -79,54 +79,86 @@
   });
 
   // ==========================================
-  // 1. СПИСОК ИЛЛЮСТРАЦИЙ
-  // width и height — реальные размеры иллюстрации в пикселях исходного макета
+  // 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
   // ==========================================
   var mainRoutePoints = [
-    { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", width: 420, height: 374 },
-    { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png", width: 350, height: 300 },
-    { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png", width: 350, height: 300 },
-    { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png", width: 350, height: 300 },
-    { coords: [-154, 57], id: "route-point-5", iconUrl: "icons/icon-5.png", width: 350, height: 300 },
-    { coords: [-112, 16], id: "route-point-6", iconUrl: "icons/icon-6.png", width: 350, height: 300 },
-    { coords: [-93, 57], id: "route-point-7", iconUrl: "icons/icon-7.png", width: 350, height: 300 },
-    { coords: [-83, 59], id: "route-point-8", iconUrl: "icons/icon-8.png", width: 350, height: 300 },
-    { coords: [-81, 67], id: "route-point-9", iconUrl: "icons/icon-9.png", width: 350, height: 300 },
-    { coords: [-70, 65], id: "route-point-10", iconUrl: "icons/icon-10.png", width: 350, height: 300 },
-    { coords: [-75, 59], id: "route-point-11", iconUrl: "icons/icon-11.png", width: 350, height: 300 },
-    { coords: [-55, 51], id: "route-point-13", iconUrl: "icons/icon-13.png", width: 350, height: 300 },
-    { coords: [-33, 61], id: "route-point-14", iconUrl: "icons/icon-14.png", width: 350, height: 300 }
+    { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [60, 53] },
+    { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
+    { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
+    { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
+    { coords: [-154, 57], id: "route-point-5", iconUrl: "icons/icon-5.png" },
+    { coords: [-112, 16], id: "route-point-6", iconUrl: "icons/icon-6.png" },
+    { coords: [-93, 57], id: "route-point-7", iconUrl: "icons/icon-7.png" },
+    { coords: [-83, 59], id: "route-point-8", iconUrl: "icons/icon-8.png" },
+    { coords: [-81, 67], id: "route-point-9", iconUrl: "icons/icon-9.png" },
+    { coords: [-70, 65], id: "route-point-10", iconUrl: "icons/icon-10.png" },
+    { coords: [-75, 59], id: "route-point-11", iconUrl: "icons/icon-11.png" },
+    { coords: [-55, 51], id: "route-point-13", iconUrl: "icons/icon-13.png" },
+    { coords: [-33, 61], id: "route-point-14", iconUrl: "icons/icon-14.png" }
   ];
 
   // ==========================================
-  // 2. ВЫВОД ИЛЛЮСТРАЦИЙ КАК ЧАСТЕЙ КАРТЫ
+  // 2. ВЫВОД ТОЧЕК И ПЛАВНАЯ РЕГУЛИРОВКА РАЗМЕРА
   // ==========================================
+  var markersList = [];
+
   mainRoutePoints.forEach(function(point) {
-    var imgWidth = point.width || 350;
-    var imgHeight = point.height || 300;
+    var baseWidth = (point.size && point.size[0]) ? point.size[0] : 60;
+    var baseHeight = (point.size && point.size[1]) ? point.size[1] : 53;
+    var ratio = baseHeight / baseWidth;
 
-    // Переводим точку привязки в пиксели макета при максимальном зуме
-    var centerPx = map.project(point.coords, maxZoom);
+    var customIcon = L.icon({
+      iconUrl: point.iconUrl,
+      iconSize: [baseWidth, baseHeight],
+      iconAnchor: [baseWidth / 2, baseHeight]
+    });
 
-    // Вычисляем границы иллюстрации (с привязкой по нижнему центру)
-    var southWestPx = L.point(centerPx.x - imgWidth / 2, centerPx.y);
-    var northEastPx = L.point(centerPx.x + imgWidth / 2, centerPx.y - imgHeight);
+    var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
 
-    // Привязываем границы напрямую к координатам подложки
-    var overlayBounds = L.latLngBounds(
-      map.unproject(southWestPx, maxZoom),
-      map.unproject(northEastPx, maxZoom)
-    );
+    marker.baseData = {
+      iconUrl: point.iconUrl,
+      baseWidth: baseWidth,
+      ratio: ratio
+    };
 
-    // Добавляем иллюстрацию как интерактивный слой карты
-    var overlay = L.imageOverlay(point.iconUrl, overlayBounds, {
-      interactive: true
-    }).addTo(map);
+    markersList.push(marker);
 
-    overlay.on('click', function() {
+    marker.on('click', function() {
       alert("Клик: " + point.id);
     });
   });
+
+  function updateIconSizes() {
+    var currentZoom = map.getZoom();
+
+    var minZ = 4.8; // Общий вид карты (60px)
+    var maxZ = 6.0; // Максимальное приближение (260px)
+
+    // Расчет коэффициента прогресса от 0 до 1
+    var progress = (currentZoom - minZ) / (maxZ - minZ);
+    if (progress < 0) progress = 0;
+    if (progress > 1) progress = 1;
+
+    // Ширина плавно растет от 60px до 260px
+    var targetWidthAtMaxZoom = 260; 
+    var scaleMultiplier = 1 + progress * ((targetWidthAtMaxZoom / 60) - 1);
+
+    markersList.forEach(function(marker) {
+      var base = marker.baseData;
+      var newWidth = base.baseWidth * scaleMultiplier;
+      var newHeight = newWidth * base.ratio;
+
+      marker.setIcon(L.icon({
+        iconUrl: base.iconUrl,
+        iconSize: [newWidth, newHeight],
+        iconAnchor: [newWidth / 2, newHeight]
+      }));
+    });
+  }
+
+  updateIconSizes();
+  map.on('zoom', updateIconSizes);
+  map.on('zoomend', updateIconSizes);
 </script>
 
 </body>
