@@ -82,7 +82,8 @@ map.on('click', function(e) {
 // 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
 // ==========================================
 var mainRoutePoints = [
-  { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [420, 374], anchor: [210, 374] },
+  // Пропорция 420х374 уменьшена до аккуратных 60х53px
+  { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [60, 53], anchor: [30, 53] },
   { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
   { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
   { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
@@ -100,6 +101,20 @@ var mainRoutePoints = [
 // ==========================================
 // 2. ВЫВОД ТОЧЕК НА КАРТУ
 // ==========================================
-var markersList = [];
+mainRoutePoints.forEach(function(point) {
+  // Для остальных точек по умолчанию ставим 50х50px
+  var defaultSize = point.size || [50, 50];
+  var defaultAnchor = point.anchor || [defaultSize[0] / 2, defaultSize[1]];
 
-mainRoutePoints.forEach(
+  var customIcon = L.icon({
+    iconUrl: point.iconUrl,
+    iconSize: defaultSize,
+    iconAnchor: defaultAnchor
+  });
+
+  var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
+
+  marker.on('click', function() {
+    alert("Клик: " + point.id);
+  });
+});
