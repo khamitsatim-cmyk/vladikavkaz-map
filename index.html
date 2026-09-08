@@ -67,7 +67,7 @@
     }, 200);
   });
 
-  // Попап для определения координат по клику
+  // Попап для определения координат
   var popup = L.popup();
   map.on('click', function(e) {
     let y = Math.round(e.latlng.lat);
@@ -82,7 +82,8 @@
   // 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
   // ==========================================
   var mainRoutePoints = [
-    { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [60, 53], anchor: [30, 53] },
+    // Статичный крупный размер (220x196px) в пропорциях оригинала 420x374
+    { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [220, 196], anchor: [110, 196] },
     { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
     { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
     { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
@@ -98,10 +99,11 @@
   ];
 
   // ==========================================
-  // 2. ВЫВОД ТОЧЕК (ФИКСИРОВАННЫЙ РАЗМЕР)
+  // 2. ВЫВОД ТОЧЕК (СТАБИЛЬНЫЙ РАЗМЕР НА ЭКРАНЕ)
   // ==========================================
   mainRoutePoints.forEach(function(point) {
-    var defaultSize = point.size || [60, 53];
+    // Дефолтный размер для остальных иллюстраций (180x160px)
+    var defaultSize = point.size || [180, 160];
     var defaultAnchor = point.anchor || [defaultSize[0] / 2, defaultSize[1]];
 
     var customIcon = L.icon({
