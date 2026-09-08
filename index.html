@@ -67,57 +67,92 @@
     }, 200);
   });
 
-// Попап для определения координат по клику (потом мы его удалим)
-var popup = L.popup();
-map.on('click', function(e) {
+  // Попап для определения координат по клику (потом мы его удалим)
+  var popup = L.popup();
+  map.on('click', function(e) {
     let y = Math.round(e.latlng.lat);
     let x = Math.round(e.latlng.lng);
     popup
         .setLatLng(e.latlng)
         .setContent("Координаты точки: [" + y + ", " + x + "]")
         .openOn(map);
-});
-
-// ==========================================
-// 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
-// ==========================================
-var mainRoutePoints = [
-  // Пропорция 420х374 уменьшена до аккуратных 60х53px
-  { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [60, 53], anchor: [30, 53] },
-  { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
-  { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
-  { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
-  { coords: [-154, 57], id: "route-point-5", iconUrl: "icons/icon-5.png" },
-  { coords: [-112, 16], id: "route-point-6", iconUrl: "icons/icon-6.png" },
-  { coords: [-93, 57], id: "route-point-7", iconUrl: "icons/icon-7.png" },
-  { coords: [-83, 59], id: "route-point-8", iconUrl: "icons/icon-8.png" },
-  { coords: [-81, 67], id: "route-point-9", iconUrl: "icons/icon-9.png" },
-  { coords: [-70, 65], id: "route-point-10", iconUrl: "icons/icon-10.png" },
-  { coords: [-75, 59], id: "route-point-11", iconUrl: "icons/icon-11.png" },
-  { coords: [-55, 51], id: "route-point-13", iconUrl: "icons/icon-13.png" },
-  { coords: [-33, 61], id: "route-point-14", iconUrl: "icons/icon-14.png" }
-];
-
-// ==========================================
-// 2. ВЫВОД ТОЧЕК НА КАРТУ
-// ==========================================
-mainRoutePoints.forEach(function(point) {
-  // Для остальных точек по умолчанию ставим 50х50px
-  var defaultSize = point.size || [50, 50];
-  var defaultAnchor = point.anchor || [defaultSize[0] / 2, defaultSize[1]];
-
-  var customIcon = L.icon({
-    iconUrl: point.iconUrl,
-    iconSize: defaultSize,
-    iconAnchor: defaultAnchor
   });
 
-  var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
+  // ==========================================
+  // 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
+  // ==========================================
+  var mainRoutePoints = [
+    // Пропорция 420х374 уменьшена до аккуратных 60х53px
+    { coords: [-193, 55], id: "route-point-1", iconUrl: "icons/icon-1.png", size: [60, 53], anchor: [30, 53] },
+    { coords: [-172, 73], id: "route-point-2", iconUrl: "icons/icon-2.png" },
+    { coords: [-166, 70], id: "route-point-3", iconUrl: "icons/icon-3.png" },
+    { coords: [-160, 69], id: "route-point-4", iconUrl: "icons/icon-4.png" },
+    { coords: [-154, 57], id: "route-point-5", iconUrl: "icons/icon-5.png" },
+    { coords: [-112, 16], id: "route-point-6", iconUrl: "icons/icon-6.png" },
+    { coords: [-93, 57], id: "route-point-7", iconUrl: "icons/icon-7.png" },
+    { coords: [-83, 59], id: "route-point-8", iconUrl: "icons/icon-8.png" },
+    { coords: [-81, 67], id: "route-point-9", iconUrl: "icons/icon-9.png" },
+    { coords: [-70, 65], id: "route-point-10", iconUrl: "icons/icon-10.png" },
+    { coords: [-75, 59], id: "route-point-11", iconUrl: "icons/icon-11.png" },
+    { coords: [-55, 51], id: "route-point-13", iconUrl: "icons/icon-13.png" },
+    { coords: [-33, 61], id: "route-point-14", iconUrl: "icons/icon-14.png" }
+  ];
 
-  marker.on('click', function() {
-    alert("Клик: " + point.id);
+  // ==========================================
+  // 2. ВЫВОД ТОЧЕК И МАСШТАБИРОВАНИЕ ПРИ ЗУМЕ
+  // ==========================================
+  var markersList = [];
+  var baseZoom = 4.8; // Стартовый масштаб карты
+
+  mainRoutePoints.forEach(function(point) {
+    var defaultSize = point.size || [60, 53];
+    var defaultAnchor = point.anchor || [defaultSize[0] / 2, defaultSize[1]];
+
+    var customIcon = L.icon({
+      iconUrl: point.iconUrl,
+      iconSize: defaultSize,
+      iconAnchor: defaultAnchor
+    });
+
+    var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
+
+    // Сохраняем базовые параметры прямо в объект маркера
+    marker.baseData = {
+      iconUrl: point.iconUrl,
+      size: defaultSize,
+      anchor: defaultAnchor
+    };
+
+    markersList.push(marker);
+
+    marker.on('click', function() {
+      alert("Клик: " + point.id);
+    });
   });
-});
+
+  // Автоматический пересчёт размера иконок при приближении/отдалении
+  function updateIconSizes() {
+    var currentZoom = map.getZoom();
+    
+    // Коэффициент 2 синхронизирует рост иконки 1:1 с ростом карты.
+    var scale = Math.pow(2, currentZoom - baseZoom);
+
+    markersList.forEach(function(marker) {
+      var base = marker.baseData;
+      var newSize = [base.size[0] * scale, base.size[1] * scale];
+      var newAnchor = [base.anchor[0] * scale, base.anchor[1] * scale];
+
+      marker.setIcon(L.icon({
+        iconUrl: base.iconUrl,
+        iconSize: newSize,
+        iconAnchor: newAnchor
+      }));
+    });
+  }
+
+  // Применяем масштаб сразу после загрузки и при изменении зума
+  updateIconSizes();
+  map.on('zoom', updateIconSizes);
 </script>
 
 </body>
