@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивная карта</title>
+  
+  <!-- Подключение Manrope из Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* 1. ПОДКЛЮЧЕНИЕ ШРИФТА HAWTHORNC */
@@ -17,12 +23,13 @@
       font-display: swap;
     }
 
+    /* 3. Manrope для всех текстов по умолчанию */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       background-color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     #map {
@@ -58,6 +65,7 @@
       pointer-events: auto;
       padding: 16px 20px 24px 20px;
       box-sizing: border-box;
+      font-family: 'Manrope', sans-serif;
     }
 
     .bottom-sheet.show-peek .sheet-content {
@@ -71,54 +79,68 @@
       overflow-y: auto;
     }
 
+    /* 1. Цвет полоски индикатора шторки E6E2DB */
     .sheet-drag-handle {
       width: 36px;
       height: 4px;
-      background: #d8d4cb;
+      background: #E6E2DB;
       border-radius: 2px;
       margin: 0 auto 12px auto;
     }
 
-    /* 5. Увеличенный крестик закрытия */
+    /* 1. Кнопка закрытия с иконкой и цветом E6E2DB */
     .sheet-close {
       position: absolute;
-      top: 10px;
+      top: 14px;
       right: 16px;
       background: none;
       border: none;
-      font-size: 32px;
-      line-height: 1;
-      color: #8e8d8a;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
+    /* 2. Обновленный прогресс-бар во всю ширину и со стилями цифр */
     .sheet-meta {
-      margin-bottom: 8px;
+      margin-bottom: 16px;
+      width: 100%;
     }
 
-    #sheet-step {
-      font-size: 14px;
-      color: #8e8d8a;
+    .sheet-step {
+      font-size: 15px;
       font-weight: 500;
+      letter-spacing: 0.2px;
+      margin-bottom: 6px;
+    }
+
+    .sheet-step .step-current {
+      color: #ff5c38;
+      font-weight: 600;
+    }
+
+    .sheet-step .step-total {
+      color: #a39f97;
     }
 
     .progress-bar {
-      width: 36px;
+      width: 100%;
       height: 3px;
-      background: #e0dcd5;
+      background: #E6E2DB;
       border-radius: 2px;
-      margin-top: 4px;
+      overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      width: 100%;
+      width: 0%;
       background: #ff5c38;
       border-radius: 2px;
+      transition: width 0.3s ease;
     }
 
-    /* 1. Заголовок шрифтом HawthornC */
+    /* Заголовок — исключение, остается HawthornC */
     .sheet-title {
       font-family: "HawthornC", "Georgia", serif;
       font-size: 28px;
@@ -128,7 +150,7 @@
       line-height: 1.2;
     }
 
-    /* 3. Горизонтальная галерея карточек */
+    /* Горизонтальная галерея карточек */
     .cards-slider-container {
       width: 100%;
       overflow: hidden;
@@ -183,7 +205,7 @@
       background: #ff5c38;
     }
 
-    /* 4. Обновленный аудиоплеер */
+    /* Аудиоплеер */
     .audio-player {
       background: #ffffff;
       border-radius: 20px;
@@ -235,7 +257,7 @@
     .audio-time {
       font-size: 13px;
       color: #222222;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Manrope', sans-serif;
       font-weight: 500;
       min-width: 32px;
       text-align: right;
@@ -252,6 +274,7 @@
       font-weight: 600;
       margin-top: 16px;
       cursor: pointer;
+      font-family: 'Manrope', sans-serif;
     }
 
     @media (min-width: 768px) {
@@ -283,11 +306,22 @@
 <div id="bottom-sheet" class="bottom-sheet">
   <div class="sheet-content">
     <div class="sheet-drag-handle"></div>
-    <button class="sheet-close" id="sheet-close">&times;</button>
+    
+    <!-- Крестик со скруглёнными концами линий и цветом E6E2DB -->
+    <button class="sheet-close" id="sheet-close" aria-label="Закрыть">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E6E2DB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
     
     <div class="sheet-meta">
-      <span id="sheet-step">1/14</span>
-      <div class="progress-bar"><div id="sheet-progress-line" class="progress-fill"></div></div>
+      <div id="sheet-step" class="sheet-step">
+        <span class="step-current">1</span><span class="step-total">/14</span>
+      </div>
+      <div class="progress-bar">
+        <div id="sheet-progress-line" class="progress-fill"></div>
+      </div>
     </div>
 
     <h2 id="sheet-title" class="sheet-title">Заголовок</h2>
@@ -603,7 +637,14 @@
   function openSheet(point) {
     currentPointIndex = point.stepIndex;
 
-    document.getElementById('sheet-step').textContent = (point.stepIndex + 1) + "/" + mainRoutePoints.length;
+    // Расчет прогресс-бара и стилизованных цифр
+    var stepNum = point.stepIndex + 1;
+    var totalSteps = mainRoutePoints.length;
+    document.getElementById('sheet-step').innerHTML = `<span class="step-current">${stepNum}</span><span class="step-total">/${totalSteps}</span>`;
+    
+    var progressPercent = (stepNum / totalSteps) * 100;
+    document.getElementById('sheet-progress-line').style.width = progressPercent + '%';
+
     document.getElementById('sheet-title').textContent = point.title || "";
 
     var slider = document.getElementById('cards-slider');
