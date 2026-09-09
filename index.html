@@ -6,6 +6,19 @@
   <title>Интерактивная карта</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
+    /* ==========================================
+       1. ПОДКЛЮЧЕНИЕ ШРИФТА HAWTHORNC
+       ========================================== */
+    @font-face {
+      font-family: 'HawthornC';
+      src: url('fonts/HawthornC.woff2') format('woff2'),
+           url('fonts/HawthornC.woff') format('woff'),
+           url('fonts/HawthornC.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -13,6 +26,7 @@
       background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+
     #map {
       width: 100%;
       height: 100vh;
@@ -50,7 +64,6 @@
       box-sizing: border-box;
     }
 
-    /* Режимы отображения */
     .bottom-sheet.show-peek .sheet-content {
       transform: translateY(calc(100% - 190px));
       overflow-y: hidden;
@@ -70,18 +83,20 @@
       margin: 0 auto 12px auto;
     }
 
+    /* 5. Увеличенный крестик закрытия */
     .sheet-close {
       position: absolute;
-      top: 12px;
+      top: 10px;
       right: 16px;
       background: none;
       border: none;
-      font-size: 24px;
+      font-size: 32px;
+      line-height: 1;
       color: #8e8d8a;
       cursor: pointer;
+      padding: 4px 8px;
     }
 
-    /* Индикатор шага */
     .sheet-meta {
       margin-bottom: 8px;
     }
@@ -107,58 +122,50 @@
       border-radius: 2px;
     }
 
-    /* Заголовок */
+    /* 1. Заголовок шрифтом HawthornC */
     .sheet-title {
-      font-family: "Georgia", "Times New Roman", serif;
-      font-size: 26px;
-      font-weight: bold;
+      font-family: "HawthornC", "Georgia", serif;
+      font-size: 28px;
+      font-weight: normal;
       color: #1a1a1a;
       margin: 0 0 16px 0;
       line-height: 1.2;
     }
 
-    /* Карточка с галереей */
-    .sheet-card {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-    }
-
-    .photo-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .photo-item {
-      position: relative;
-      border-radius: 14px;
+    /* 3. Горизонтальная галерея карточек */
+    .cards-slider-container {
+      width: 100%;
       overflow: hidden;
     }
 
-    .photo-item img {
+    .cards-slider {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .cards-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card-item {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .card-item img {
       width: 100%;
-      height: 150px;
-      object-fit: cover;
       display: block;
-    }
-
-    .photo-tag {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #222;
-    }
-
-    .photo-tag.tag-blue {
-      background: #e3f2fd;
-      color: #1976d2;
+      height: auto;
+      object-fit: cover;
     }
 
     .slider-dots {
@@ -171,19 +178,20 @@
     .dot {
       width: 6px;
       height: 6px;
-      background: #e0e0e0;
+      background: #d0cbc2;
       border-radius: 50%;
+      transition: background 0.2s;
     }
 
     .dot.active {
       background: #ff5c38;
     }
 
-    /* Плеер */
+    /* 4. Обновленный аудиоплеер с динамической волной */
     .audio-player {
       background: #ffffff;
-      border-radius: 16px;
-      padding: 10px 16px;
+      border-radius: 20px;
+      padding: 8px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -191,16 +199,21 @@
     }
 
     .play-btn {
-      width: 42px;
-      height: 42px;
-      background: #ff5c38;
+      width: 44px;
+      height: 44px;
+      background: #ff6d4b;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .play-btn:active {
+      background: #e05535;
     }
 
     .waveform {
@@ -208,24 +221,30 @@
       align-items: center;
       gap: 3px;
       flex: 1;
-      height: 24px;
+      height: 32px;
+      cursor: pointer;
     }
 
     .waveform span {
       width: 3px;
-      height: 100%;
-      background: #ff5c38;
+      background: #a8a299; /* Изначально серая волна */
       border-radius: 2px;
-      opacity: 0.8;
+      transition: background 0.15s ease;
+    }
+
+    .waveform span.active {
+      background: #ff6d4b; /* Оранжевое заполнение */
     }
 
     .audio-time {
       font-size: 13px;
-      color: #666;
-      font-family: monospace;
+      color: #222222;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 500;
+      min-width: 32px;
+      text-align: right;
     }
 
-    /* Кнопка */
     .btn-primary {
       width: 100%;
       background: #ff5c38;
@@ -239,7 +258,6 @@
       cursor: pointer;
     }
 
-    /* Адаптив под десктоп */
     @media (min-width: 768px) {
       .sheet-content {
         left: 20px;
@@ -265,6 +283,7 @@
 
 <div id="map"></div>
 
+<!-- ШТОРКА -->
 <div id="bottom-sheet" class="bottom-sheet">
   <div class="sheet-content">
     <div class="sheet-drag-handle"></div>
@@ -277,36 +296,30 @@
 
     <h2 id="sheet-title" class="sheet-title">Заголовок</h2>
 
-    <div class="sheet-card">
-      <div class="photo-container">
-        <div class="photo-item">
-          <span class="photo-tag" id="tag-old">1930</span>
-          <img id="sheet-img-old" src="images/old-1.jpg" alt="Архивное фото">
-        </div>
-        <div class="photo-item">
-          <span class="photo-tag tag-blue" id="tag-now">сейчас</span>
-          <img id="sheet-img-now" src="images/now-1.jpg" alt="Современное фото">
-        </div>
-      </div>
-      
-      <div class="slider-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
+    <!-- Карусель с готовыми карточками-картинками -->
+    <div class="cards-slider-container">
+      <div class="cards-slider" id="cards-slider"></div>
+      <div class="slider-dots" id="slider-dots"></div>
     </div>
 
+    <!-- Интерактивный плеер -->
     <div class="audio-player">
       <button id="play-btn" class="play-btn">
-        <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
-          <path d="M14 8L0 16V0L14 8Z" fill="white"/>
+        <!-- Иконка Play по умолчанию -->
+        <svg id="svg-play" width="16" height="18" viewBox="0 0 16 18" fill="none">
+          <path d="M15 9L1.5 16.7942V1.20577L15 9Z" fill="white"/>
+        </svg>
+        <!-- Иконка Pause (скрыта) -->
+        <svg id="svg-pause" width="14" height="18" viewBox="0 0 14 18" fill="none" style="display: none;">
+          <rect width="4.5" height="18" rx="2" fill="white"/>
+          <rect x="9.5" width="4.5" height="18" rx="2" fill="white"/>
         </svg>
       </button>
-      <div class="waveform">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-      </div>
-      <span id="audio-time" class="audio-time">1:55</span>
+      
+      <div class="waveform" id="waveform"></div>
+      <span id="audio-time" class="audio-time">0:00</span>
+      
+      <audio id="audio-element"></audio>
     </div>
 
     <button id="next-point-btn" class="btn-primary">Дальше</button>
@@ -344,55 +357,44 @@
 
   map.setMaxBounds(bounds);
 
-  // Начальная позиция и масштаб
   var initialX = 2800;
   var initialY = 8500;
   var startZoom = 4.8;
-
   var startCenter = map.unproject([initialX, initialY], maxZoom);
   map.setView(startCenter, startZoom);
 
   window.addEventListener('load', function() {
-    setTimeout(function() {
-      map.invalidateSize();
-    }, 200);
+    setTimeout(function() { map.invalidateSize(); }, 200);
   });
 
-  // Вспомогательный клик для вывода координат
   var popup = L.popup();
   map.on('click', function(e) {
     let y = Math.round(e.latlng.lat);
     let x = Math.round(e.latlng.lng);
-    popup
-        .setLatLng(e.latlng)
-        .setContent("Координаты точки: [" + y + ", " + x + "]")
-        .openOn(map);
+    popup.setLatLng(e.latlng).setContent("Координаты: [" + y + ", " + x + "]").openOn(map);
     closeSheet();
   });
 
   // ==========================================
-  // 1. СПИСОК ОСНОВНЫХ ТОЧЕК МАРШРУТА
+  // 2. ДАННЫЕ ТОЧЕК И СПИСОК КАРТОЧЕК
   // ==========================================
   var mainRoutePoints = [
-    { coords: [-193, 55], id: "route-point-1", stepIndex: 0, iconUrl: "icons/icon-1.png", size: [60, 53], title: "Набережная и Исса Плиев", imgOld: "images/old-1.jpg", tagOld: "1930", imgNow: "images/now-1.jpg", tagNow: "сейчас", audioTime: "1:55" },
-    { coords: [-172, 73], id: "route-point-2", stepIndex: 1, iconUrl: "icons/icon-2.png", size: [66, 43], title: "Чугунный мост", imgOld: "images/old-2.jpg", tagOld: "1905", imgNow: "images/now-2.jpg", tagNow: "сейчас", audioTime: "2:10" },
-    { coords: [-168, 70], id: "route-point-3", stepIndex: 2, iconUrl: "icons/icon-3.png", size: [63, 44], title: "Точка 3", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:20" },
-    { coords: [-161, 69], id: "route-point-4", stepIndex: 3, iconUrl: "icons/icon-4.png", size: [66, 54], title: "Точка 4", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:40" },
-    { coords: [-154, 57], id: "route-point-5", stepIndex: 4, iconUrl: "icons/icon-5.png", size: [74, 50], title: "Точка 5", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "2:00" },
-    { coords: [-113, 16], id: "route-point-6", stepIndex: 5, iconUrl: "icons/icon-6.png", size: [46, 61], title: "Точка 6", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:15" },
-    { coords: [-93, 57],  id: "route-point-7", stepIndex: 6, iconUrl: "icons/icon-7.png", size: [109, 41], title: "Точка 7", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:30" },
-    { coords: [-83, 59],  id: "route-point-8", stepIndex: 7, iconUrl: "icons/icon-8.png", size: [60, 54], title: "Точка 8", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:50" },
-    { coords: [-81, 67],  id: "route-point-9", stepIndex: 8, iconUrl: "icons/icon-9.png", size: [63, 53], title: "Точка 9", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "2:05" },
-    { coords: [-70, 65],  id: "route-point-10", stepIndex: 9, iconUrl: "icons/icon-10.png", size: [73, 45], title: "Точка 10", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:10" },
-    { coords: [-75, 59],  id: "route-point-11", stepIndex: 10, iconUrl: "icons/icon-11.png", size: [71, 50], title: "Точка 11", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:45" },
-    { coords: [-60, 56],  id: "route-point-12", stepIndex: 11, iconUrl: "icons/icon-12.png", size: [69, 53], title: "Точка 12", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "2:20" },
-    { coords: [-56, 49],  id: "route-point-13", stepIndex: 12, iconUrl: "icons/icon-13.png", size: [83, 42], title: "Точка 13", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "1:25" },
-    { coords: [-33, 61],  id: "route-point-14", stepIndex: 13, iconUrl: "icons/icon-14.png", size: [66, 45], title: "Точка 14", imgOld: "", tagOld: "раньше", imgNow: "", tagNow: "сейчас", audioTime: "2:00" }
+    { 
+      coords: [-193, 55], id: "route-point-1", stepIndex: 0, 
+      iconUrl: "icons/icon-1.png", size: [60, 53], 
+      title: "Набережная и Исса Плиев", 
+      cards: ["images/pliev-01.jpg", "images/pliev-02.jpg", "images/pliev-03.jpg", "images/pliev-04.jpg"],
+      audioUrl: "audio/point-1.mp3", audioTime: "2:30" 
+    },
+    { 
+      coords: [-172, 73], id: "route-point-2", stepIndex: 1, 
+      iconUrl: "icons/icon-2.png", size: [66, 43], 
+      title: "Чугунный мост", 
+      cards: ["images/bridge-01.jpg", "images/bridge-02.jpg"],
+      audioUrl: "audio/point-2.mp3", audioTime: "2:10" 
+    }
   ];
 
-  // ==========================================
-  // 2. ВЫВОД ТОЧЕК И ПЛАВНАЯ РЕГУЛИРОВКА РАЗМЕРА
-  // ==========================================
   var markersList = [];
 
   mainRoutePoints.forEach(function(point) {
@@ -408,15 +410,9 @@
 
     var marker = L.marker(point.coords, { icon: customIcon }).addTo(map);
 
-    marker.baseData = {
-      iconUrl: point.iconUrl,
-      baseWidth: baseWidth,
-      ratio: ratio
-    };
-
+    marker.baseData = { iconUrl: point.iconUrl, baseWidth: baseWidth, ratio: ratio };
     markersList.push(marker);
 
-    // Клик открывает шторку с данными точки
     marker.on('click', function(e) {
       L.DomEvent.stopPropagation(e);
       openSheet(point);
@@ -432,8 +428,7 @@
     if (progress < 0) progress = 0;
     if (progress > 1) progress = 1;
 
-    var targetWidthAtMaxZoom = 260; 
-    var scaleMultiplier = 1 + progress * ((targetWidthAtMaxZoom / 60) - 1);
+    var scaleMultiplier = 1 + progress * ((260 / 60) - 1);
 
     markersList.forEach(function(marker) {
       var base = marker.baseData;
@@ -453,94 +448,136 @@
   map.on('zoomend', updateIconSizes);
 
   // ==========================================
-  // 3. ВТОРОСТЕПЕННЫЕ ИНФОРМАЦИОННЫЕ ТОЧКИ
-  // ==========================================
-  var infoIcon = L.icon({
-    iconUrl: 'icons/info-icon.png',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -32]
-  });
-
-  var secondaryPoints = [
-    { coords: [-181, 54], title: "Следы барса", text: "Символизирует возрождение популяции барсов на Кавказе." },
-    { coords: [-175, 64], title: "Смотровая", text: "Декоративная башня. Скрывает техническое помещение старого гидротехнического сооружения." },
-    { coords: [-175, 74], title: "Бронзовая карта", text: "Карта города. Реставрация 2026г." },
-    { coords: [-178, 81], title: "С.Штыб", text: "Памятник открыли в декабре 1987 года" },
-    { coords: [-165, 74], title: "Мастерская Омарова", text: "Историческая оружейная мастерская, в здании которой сегодня работает кафе Balance." },
-    { coords: [-160, 60], title: "Водная система парка", text: "Историческая система каналов и отстойников, питающая пруды парка водой из Терека." },
-    { coords: [-148, 51], title: "Дед и внук", text: "Бронзовая скульптура о связи поколений, изображающая деда и внука в борьбе на руках." },
-    { coords: [-130, 63], title: "Дворец правосудия", text: "Возвели в 1960-х годах." },
-    { coords: [-130, 78], title: "Дом советов", text: "Строительство началось в 1936 году." },
-    { coords: [-125, 72], title: "Дуб Терешковой", text: "Дуб, посаженный космонавтом Валентиной Терешковой." },
-    { coords: [-122, 68], title: "Люк Крепость Владикавказ", text: "Декоративный объект." },
-    { coords: [-110, 50], title: "Шахматный павильон", text: "Временно не работает." },
-    { coords: [-103, 54], title: "Кафе Горка", text: "Дата открытия 1985г. Атмосферное место в центре парка." },
-    { coords: [-99, 49], title: "Танец Хонга", text: "Посвящена традиционному осетинскому парному танцу-приглашению «Хонга кафт»." },
-    { coords: [-113, 42], title: "Китайская беседка", text: "Первоначальное возведение датируется 1976 годом." },
-    { coords: [-106, 67], title: "Коста Хетагуров", text: "Памятник основоположнику осетинской литературы Коста Хетагурову на аллее Проспекта Мира." },
-    { coords: [-96, 55], title: "Лабиринт Шырдона", text: "Арт-объект." },
-    { coords: [-96, 60], title: "Национальный музей", text: "" },
-    { coords: [-92, 61], title: "Особняк Ходякова", text: "" },
-    { coords: [-89, 60], title: "Дом быта", text: "" },
-    { coords: [-88, 54], title: "Табачная фабрика", text: "" },
-    { coords: [-95, 45], title: "Особняк Штейнгеля", text: "Сегодня — администрация парка, но изначально жилой дом музыканта и композитора Ивана Штейнгеля." },
-    { coords: [-108, 28], title: "Лодочная станция", text: "Посмотреть на лебедей и покататься на лодках." },
-    { coords: [-96, 27], title: "Смотровая площадка", text: "Смотровая площадка парка. Вид на пруды" },
-    { coords: [-61, 51], title: "Дом офицеров", text: "Сейчас здание в заброшенном состоянии" },
-    { coords: [-50, 60], title: "Городовой", text: "«Городовой» — жанровая скульптура, установленная во Владикавказе в 2013 году." },
-    { coords: [-5, 51], title: "Кинематограф Гигант", text: "Здание бывшего кинематографа «Гигант». Было построено 110 лет назад итальянским акционерным обществом." },
-    { coords: [-70, 59], title: "Кинематограф Пате", text: "Был один из самых посещаемых кинотеатров в столице республики." },
-    { coords: [-80, 60], title: "Аптека №3", text: "Старейшая аптека № 3 во Владикавказе. Ведет историю с 1895 года." },
-    { coords: [-143, 68], title: "Сквер", text: "На этом месте раньше находился кинотеатр Октябрь." },
-    { coords: [-94, 30], title: "Кафе Станция", text: "Внутри кафе можно увидеть водопроводную систему парка." }
-  ];
-
-  secondaryPoints.forEach(function(point) {
-    var marker = L.marker(point.coords, { icon: infoIcon }).addTo(map);
-
-    marker.bindPopup(`<b>${point.title}</b><br>${point.text}`, {
-      closeButton: false,
-      offset: [0, -10]
-    });
-  });
-
-  // ==========================================
-  // 4. ЛОГИКА УПРАВЛЕНИЯ ШТОРКОЙ
+  // 3. ШТОРКА, ГАЛЕРЕЯ И АУДИОПЛЕЕР
   // ==========================================
   var sheet = document.getElementById('bottom-sheet');
   var currentPointIndex = 0;
+
+  var audioElement = document.getElementById('audio-element');
+  var playBtn = document.getElementById('play-btn');
+  var svgPlay = document.getElementById('svg-play');
+  var svgPause = document.getElementById('svg-pause');
+  var waveformContainer = document.getElementById('waveform');
+  var audioTimeSpan = document.getElementById('audio-time');
+
+  // Генерация паттерна высот звуковой волны
+  var barHeights = [35, 55, 80, 45, 95, 60, 40, 75, 50, 85, 65, 40, 100, 55, 70, 45, 80, 60, 40, 90, 65, 50, 75, 40, 30];
+
+  function renderWaveform() {
+    waveformContainer.innerHTML = '';
+    barHeights.forEach(function(hPercent) {
+      var bar = document.createElement('span');
+      bar.style.height = hPercent + '%';
+      waveformContainer.appendChild(bar);
+    });
+  }
+  renderWaveform();
 
   function openSheet(point) {
     currentPointIndex = point.stepIndex;
 
     document.getElementById('sheet-step').textContent = (point.stepIndex + 1) + "/" + mainRoutePoints.length;
     document.getElementById('sheet-title').textContent = point.title || "";
-    document.getElementById('sheet-img-old').src = point.imgOld || "images/placeholder.jpg";
-    document.getElementById('sheet-img-now').src = point.imgNow || "images/placeholder.jpg";
-    document.getElementById('audio-time').textContent = point.audioTime || "0:00";
-    document.getElementById('tag-old').textContent = point.tagOld || "раньше";
-    document.getElementById('tag-now').textContent = point.tagNow || "сейчас";
+
+    // Рендер карточек
+    var slider = document.getElementById('cards-slider');
+    var dotsContainer = document.getElementById('slider-dots');
+    slider.innerHTML = '';
+    dotsContainer.innerHTML = '';
+
+    if (point.cards && point.cards.length > 0) {
+      point.cards.forEach(function(cardSrc, index) {
+        var cardDiv = document.createElement('div');
+        cardDiv.className = 'card-item';
+        cardDiv.innerHTML = `<img src="${cardSrc}" alt="Карточка ${index + 1}">`;
+        slider.appendChild(cardDiv);
+
+        var dot = document.createElement('span');
+        dot.className = 'dot' + (index === 0 ? ' active' : '');
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    // Слушатель скролла слайдера для переключения точек
+    slider.addEventListener('scroll', function() {
+      var cardWidth = slider.clientWidth;
+      var activeIndex = Math.round(slider.scrollLeft / cardWidth);
+      var dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === activeIndex);
+      });
+    });
+
+    // Настройка аудио
+    if (point.audioUrl) {
+      audioElement.src = point.audioUrl;
+    }
+    audioTimeSpan.textContent = point.audioTime || "0:00";
+    resetAudioState();
 
     map.panTo(point.coords);
-
     sheet.classList.remove('show-full');
     sheet.classList.add('show-peek');
   }
 
   function closeSheet() {
     sheet.classList.remove('show-peek', 'show-full');
+    audioElement.pause();
+    resetAudioState();
   }
 
-  // Клик по тизеру раскладывает шторку во весь экран
+  // Управление плеером
+  playBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (audioElement.paused) {
+      audioElement.play();
+      svgPlay.style.display = 'none';
+      svgPause.style.display = 'block';
+    } else {
+      audioElement.pause();
+      svgPlay.style.display = 'block';
+      svgPause.style.display = 'none';
+    }
+  });
+
+  function resetAudioState() {
+    svgPlay.style.display = 'block';
+    svgPause.style.display = 'none';
+    var bars = waveformContainer.querySelectorAll('span');
+    bars.forEach(b => b.classList.remove('active'));
+  }
+
+  // Заполнение волны оранжевым по мере воспроизведения
+  audioElement.addEventListener('timeupdate', function() {
+    if (!audioElement.duration) return;
+    var progress = audioElement.currentTime / audioElement.duration;
+    var bars = waveformContainer.querySelectorAll('span');
+    var activeCount = Math.floor(progress * bars.length);
+
+    bars.forEach(function(bar, index) {
+      if (index <= activeCount) {
+        bar.classList.add('active');
+      } else {
+        bar.classList.remove('active');
+      }
+    });
+
+    // Форматирование времени
+    var mins = Math.floor(audioElement.currentTime / 60);
+    var secs = Math.floor(audioElement.currentTime % 60);
+    audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+  });
+
+  audioElement.addEventListener('ended', resetAudioState);
+
+  // Переход в полный режим
   document.querySelector('.sheet-content').addEventListener('click', function(e) {
-    if (sheet.classList.contains('show-peek') && !e.target.closest('#sheet-close') && !e.target.closest('#next-point-btn')) {
+    if (sheet.classList.contains('show-peek') && !e.target.closest('#sheet-close') && !e.target.closest('#next-point-btn') && !e.target.closest('.audio-player')) {
       sheet.classList.remove('show-peek');
       sheet.classList.add('show-full');
     }
   });
 
-  // Переход по кнопке "Дальше"
   document.getElementById('next-point-btn').addEventListener('click', function(e) {
     e.stopPropagation();
     var nextIndex = currentPointIndex + 1;
@@ -551,7 +588,6 @@
     }
   });
 
-  // Закрытие по нажатию на крестик
   document.getElementById('sheet-close').addEventListener('click', function(e) {
     e.stopPropagation();
     closeSheet();
