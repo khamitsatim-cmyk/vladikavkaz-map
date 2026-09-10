@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивная карта</title>
   
-  <!-- Подключение Manrope из Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -152,18 +151,22 @@
 
     /* Горизонтальная галерея карточек */
     .cards-slider-container {
+      position: relative;
       width: 100%;
+      background: #ffffff;
+      border-radius: 20px;
+      padding-bottom: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
       overflow: hidden;
     }
 
     .cards-slider {
       display: flex;
-      gap: 12px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
-      padding-bottom: 4px;
     }
 
     .cards-slider::-webkit-scrollbar {
@@ -173,36 +176,69 @@
     .card-item {
       flex: 0 0 100%;
       scroll-snap-align: start;
-      border-radius: 20px;
-      overflow: hidden;
-      background: #ffffff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     }
 
     .card-item img {
       width: 100%;
-      display: block;
       height: auto;
-      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ */
+    .slider-arrow {
+      position: absolute;
+      top: 40%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+      color: #333333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: background 0.2s, transform 0.2s;
+      z-index: 5;
+    }
+
+    .slider-arrow:hover {
+      background: #ffffff;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .slider-arrow.prev {
+      left: 10px;
+    }
+
+    .slider-arrow.next {
+      right: 10px;
     }
 
     .slider-dots {
       display: flex;
       justify-content: center;
-      gap: 6px;
-      margin-top: 12px;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .dot {
-      width: 6px;
-      height: 6px;
-      background: #d0cbc2;
+      width: 8px;
+      height: 8px;
+      background: #e6e2db;
       border-radius: 50%;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.2s;
     }
 
     .dot.active {
       background: #ff5c38;
+      transform: scale(1.15);
     }
 
     /* Аудиоплеер */
@@ -302,12 +338,10 @@
 
 <div id="map"></div>
 
-<!-- ШТОРКА -->
 <div id="bottom-sheet" class="bottom-sheet">
   <div class="sheet-content">
     <div class="sheet-drag-handle"></div>
     
-    <!-- Крестик со скруглёнными концами линий и цветом E6E2DB -->
     <button class="sheet-close" id="sheet-close" aria-label="Закрыть">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E6E2DB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -327,7 +361,9 @@
     <h2 id="sheet-title" class="sheet-title">Заголовок</h2>
 
     <div class="cards-slider-container">
+      <button class="slider-arrow prev" id="slider-prev" aria-label="Назад">‹</button>
       <div class="cards-slider" id="cards-slider"></div>
+      <button class="slider-arrow next" id="slider-next" aria-label="Вперед">›</button>
       <div class="slider-dots" id="slider-dots"></div>
     </div>
 
@@ -673,6 +709,7 @@
 
     slider.onscroll = function() {
       var cardWidth = slider.clientWidth;
+      if (cardWidth === 0) return;
       var activeIndex = Math.round(slider.scrollLeft / cardWidth);
       var dots = dotsContainer.querySelectorAll('.dot');
       dots.forEach((d, idx) => {
@@ -696,6 +733,23 @@
     audioElement.pause();
     resetAudioState();
   }
+
+  /* НАВИГАЦИЯ СЛАЙДЕРА СТРЕЛКАМИ */
+  document.getElementById('slider-prev').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var slider = document.getElementById('cards-slider');
+    if (slider) {
+      slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+    }
+  });
+
+  document.getElementById('slider-next').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var slider = document.getElementById('cards-slider');
+    if (slider) {
+      slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
+    }
+  });
 
   playBtn.addEventListener('click', function(e) {
     e.stopPropagation();
@@ -739,7 +793,11 @@
   audioElement.addEventListener('ended', resetAudioState);
 
   document.querySelector('.sheet-content').addEventListener('click', function(e) {
-    if (sheet.classList.contains('show-peek') && !e.target.closest('#sheet-close') && !e.target.closest('#next-point-btn') && !e.target.closest('.audio-player')) {
+    if (sheet.classList.contains('show-peek') && 
+        !e.target.closest('#sheet-close') && 
+        !e.target.closest('#next-point-btn') && 
+        !e.target.closest('.audio-player') &&
+        !e.target.closest('.slider-arrow')) {
       sheet.classList.remove('show-peek');
       sheet.classList.add('show-full');
     }
