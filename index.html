@@ -149,43 +149,43 @@
       line-height: 1.2;
     }
 
-    /* Горизонтальная галерея карточек */
-    .cards-slider-container {
-      position: relative;
-      width: 100%;
-      background: #ffffff;
-      border-radius: 20px;
-      padding-bottom: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-      overflow: hidden;
-    }
+ /* Горизонтальная галерея карточек */
+.cards-slider-container {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
 
-    .cards-slider {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
+.cards-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
 
-    .cards-slider::-webkit-scrollbar {
-      display: none;
-    }
+.cards-slider::-webkit-scrollbar {
+  display: none;
+}
 
-    .card-item {
-      flex: 0 0 100%;
-      scroll-snap-align: start;
-    }
+.card-item {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
 
-    .card-item img {
-      width: 100%;
-      height: auto;
-      display: block;
-      pointer-events: none;
-    }
+.card-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
 
-/* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ (по умолчанию для ПК) */
+/* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ (ДЛЯ ПК) */
 .slider-arrow {
   position: absolute;
   top: 40%;
@@ -220,29 +220,32 @@
   right: 10px;
 }
 
-/* ТОЧКИ ПАГИНАЦИИ (6.4px базовые, 8px активная) */
+/* ТОЧКИ ПАГИНАЦИИ (6.4px / 8px) */
 .slider-dots {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
   margin-top: 10px;
+  height: 12px;
 }
 
 .dot {
   width: 6.4px;
   height: 6.4px;
-  background: #e6e2db;
+  background-color: #e6e2db;
   border-radius: 50%;
-  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
 }
 
 .dot.active {
-  background: #ff5c38;
-  transform: scale(1.25); /* 6.4px * 1.25 = 8px */
+  width: 8px;
+  height: 8px;
+  background-color: #ff5c38;
 }
 
-/* ЖЕЛЕЗОБЕТОННО СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ И ТАЧ-ЭКРАНАХ */
+/* СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ И ТАЧ-УСТРОЙСТВАХ */
 @media (max-width: 768px), (hover: none) {
   .slider-arrow {
     display: none !important;
