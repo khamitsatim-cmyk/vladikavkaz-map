@@ -149,7 +149,7 @@
       line-height: 1.2;
     }
 
- /* Горизонтальная галерея карточек */
+/* Горизонтальная галерея карточек */
 .cards-slider-container {
   position: relative;
   width: 100%;
@@ -185,7 +185,7 @@
   pointer-events: none;
 }
 
-/* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ (ДЛЯ ПК) */
+/* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ */
 .slider-arrow {
   position: absolute;
   top: 40%;
@@ -220,32 +220,29 @@
   right: 10px;
 }
 
-/* ТОЧКИ ПАГИНАЦИИ (6.4px / 8px) */
+/* ТОЧКИ ПАГИНАЦИИ (ИСХОДНЫЕ) */
 .slider-dots {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  height: 12px;
 }
 
 .dot {
-  width: 6.4px;
-  height: 6.4px;
-  background-color: #e6e2db;
+  width: 8px;
+  height: 8px;
+  background: #e6e2db;
   border-radius: 50%;
-  flex-shrink: 0;
-  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .dot.active {
-  width: 8px;
-  height: 8px;
-  background-color: #ff5c38;
+  background: #ff5c38;
+  transform: scale(1.15);
 }
 
-/* СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ И ТАЧ-УСТРОЙСТВАХ */
+/* СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ УСТРОЙСТВАХ */
 @media (max-width: 768px), (hover: none) {
   .slider-arrow {
     display: none !important;
