@@ -149,15 +149,14 @@
       line-height: 1.2;
     }
 
-/* Горизонтальная галерея карточек */
+/* Горизонтальная галерея карточек (только для фото) */
 .cards-slider-container {
   position: relative;
   width: 100%;
   background: #ffffff;
   border-radius: 20px;
-  padding-bottom: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 .cards-slider {
@@ -185,10 +184,10 @@
   pointer-events: none;
 }
 
-/* СТРЕЛКИ ДЛЯ ГАЛЕРЕИ */
+/* СТРЕЛКИ (по центру фотографии) */
 .slider-arrow {
   position: absolute;
-  top: 40%;
+  top: 50%;
   transform: translateY(-50%);
   width: 32px;
   height: 32px;
@@ -212,21 +211,16 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-.slider-arrow.prev {
-  left: 10px;
-}
+.slider-arrow.prev { left: 10px; }
+.slider-arrow.next { right: 10px; }
 
-.slider-arrow.next {
-  right: 10px;
-}
-
-/* ТОЧКИ ПАГИНАЦИИ (ИСХОДНЫЕ) */
+/* ТОЧКИ ПАГИНАЦИИ (ВНЕ КАРТОЧКИ, НА БЕЖЕВОМ ФОНЕ) */
 .slider-dots {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .dot {
@@ -242,7 +236,7 @@
   transform: scale(1.15);
 }
 
-/* СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ УСТРОЙСТВАХ */
+/* СКРЫВАЕМ СТРЕЛКИ НА МОБИЛЬНЫХ */
 @media (max-width: 768px), (hover: none) {
   .slider-arrow {
     display: none !important;
@@ -389,12 +383,14 @@
 
     <h2 id="sheet-title" class="sheet-title">Заголовок</h2>
 
-    <div class="cards-slider-container">
-      <button class="slider-arrow prev" id="slider-prev" aria-label="Назад">‹</button>
-      <div class="cards-slider" id="cards-slider"></div>
-      <button class="slider-arrow next" id="slider-next" aria-label="Вперед">›</button>
-      <div class="slider-dots" id="slider-dots"></div>
-    </div>
+   <div class="cards-slider-container">
+  <button class="slider-arrow prev" id="slider-prev" aria-label="Назад">‹</button>
+  <div class="cards-slider" id="cards-slider"></div>
+  <button class="slider-arrow next" id="slider-next" aria-label="Вперед">›</button>
+</div>
+
+<!-- Вынесли строку ниже, теперь она снаружи на бежевом фоне -->
+<div class="slider-dots" id="slider-dots"></div>
 
     <div class="audio-player">
       <button id="play-btn" class="play-btn">
