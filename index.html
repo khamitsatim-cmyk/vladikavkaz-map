@@ -384,29 +384,63 @@
 
     <h2 id="sheet-title" class="sheet-title">Заголовок</h2>
 
-   <div class="cards-slider-container">
-  <button class="slider-arrow prev" id="slider-prev" aria-label="Назад">‹</button>
-  <div class="cards-slider" id="cards-slider"></div>
-  <button class="slider-arrow next" id="slider-next" aria-label="Вперед">›</button>
-</div>
+    <div class="cards-slider-container">
+      <button class="slider-arrow prev" id="slider-prev" aria-label="Назад">‹</button>
+      <div class="cards-slider" id="cards-slider"></div>
+      <button class="slider-arrow next" id="slider-next" aria-label="Вперед">›</button>
+    </div>
 
-<!-- Вынесли строку ниже, теперь она снаружи на бежевом фоне -->
-<div class="slider-dots" id="slider-dots"></div>
+    <div class="slider-dots" id="slider-dots"></div>
 
     <div class="audio-player">
       <button id="play-btn" class="play-btn">
-        <svg id="svg-play" width="16" height="18" viewBox="0 0 16 18" fill="none">
-          <path d="M15 9L1.5 16.7942V1.20577L15 9Z" fill="white"/>
+        <svg id="svg-play" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_1504_24)">
+            <mask id="mask0_1504_24" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40">
+              <path d="M28 0H12C5.37258 0 0 5.37258 0 12V28C0 34.6274 5.37258 40 12 40H28C34.6274 40 40 34.6274 40 28V12C40 5.37258 34.6274 0 28 0Z" fill="white"/>
+            </mask>
+            <g mask="url(#mask0_1504_24)">
+              <path d="M40 0H0V40H40V0Z" fill="#FA6F49"/>
+              <mask id="mask1_1504_24" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="8" y="8" width="24" height="24">
+                <path d="M32 8H8V32H32V8Z" fill="white"/>
+              </mask>
+              <g mask="url(#mask1_1504_24)">
+                <path d="M19.0738 14.9556C17.7423 14.1083 16 15.0648 16 16.6429V23.3563C16 24.9344 17.7423 25.8909 19.0738 25.0436L24.3485 21.6869C25.5835 20.901 25.5835 19.0982 24.3485 18.3123L19.0738 14.9556Z" fill="#F4F2ED"/>
+              </g>
+            </g>
+          </g>
+          <defs>
+            <clipPath id="clip0_1504_24">
+              <rect width="40" height="40" fill="white"/>
+            </clipPath>
+          </defs>
         </svg>
-        <svg id="svg-pause" width="14" height="18" viewBox="0 0 14 18" fill="none" style="display: none;">
-          <rect width="4.5" height="18" rx="2" fill="white"/>
-          <rect x="9.5" width="4.5" height="18" rx="2" fill="white"/>
+
+        <svg id="svg-pause" width="40" height="40" viewBox="0 0 40 40" fill="none" style="display: none;" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_1504_35)">
+            <mask id="mask0_1504_35" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="40">
+              <path d="M28 0H12C5.37258 0 0 5.37258 0 12V28C0 34.6274 5.37258 40 12 40H28C34.6274 40 40 34.6274 40 28V12C40 5.37258 34.6274 0 28 0Z" fill="white"/>
+            </mask>
+            <g mask="url(#mask0_1504_35)">
+              <path d="M40 0H0V40H40V0Z" fill="#FA6F49"/>
+              <mask id="mask1_1504_35" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="8" y="8" width="24" height="24">
+                <path d="M32 8H8V32H32V8Z" fill="white"/>
+              </mask>
+              <g mask="url(#mask1_1504_35)">
+                <path d="M14 25C14 26.1046 14.8954 27 16 27C17.1046 27 18 26.1046 18 25V15C18 13.8954 17.1046 13 16 13C14.8954 13 14 13.8954 14 15V25ZM24 13C22.8954 13 22 13.8954 22 15V25C22 26.1046 22.8954 27 24 27C25.1046 27 26 26.1046 26 25V15C26 13.8954 25.1046 13 24 13Z" fill="#F4F2ED"/>
+              </g>
+            </g>
+          </g>
+          <defs>
+            <clipPath id="clip0_1504_35">
+              <rect width="40" height="40" fill="white"/>
+            </clipPath>
+          </defs>
         </svg>
       </button>
       
       <div class="waveform" id="waveform"></div>
       <span id="audio-time" class="audio-time">0:00</span>
-      
       <audio id="audio-element"></audio>
     </div>
 
@@ -479,98 +513,98 @@
       iconUrl: "icons/icon-2.png", size: [66, 43], 
       title: "Площадь Штыба", 
       cards: ["images/point2-1.jpg", "images/point2-2.jpg", "images/point2-3.jpg", "images/point2-4.jpg", "images/point2-5.jpg"],
-      audioUrl: "audio/point-2.mp3", audioTime: "2:10" 
+      audioUrl: "audio/point-2.mp3", audioTime: "1:53" 
     },
     { 
       coords: [-168, 70], id: "route-point-3", stepIndex: 2, 
       iconUrl: "icons/icon-3.png", size: [63, 44], 
       title: "Дом Е. Вахтангова", 
       cards: ["images/point3-1.jpg", "images/point3-2.jpg","images/point3-3.jpg", "images/point3-4.jpg","images/point3-5.jpg"],
-      audioUrl: "audio/point-3.mp3", audioTime: "1:20" 
+      audioUrl: "audio/point-3.mp3", audioTime: "2:03" 
     },
     { 
       coords: [-161, 69], id: "route-point-4", stepIndex: 3, 
       iconUrl: "icons/icon-4.png", size: [66, 54], 
       title: "Армянская церковь", 
       cards: ["images/point4-1.jpg", "images/point4-2.jpg","images/point4-3.jpg", "images/point4-4.jpg"],
-      audioUrl: "audio/point-4.mp3", audioTime: "1:40" 
+      audioUrl: "audio/point-4.mp3", audioTime: "1:52" 
     },
     { 
       coords: [-154, 57], id: "route-point-5", stepIndex: 4, 
       iconUrl: "icons/icon-5.png", size: [74, 50], 
       title: "Парк им. Коста Хетагурова", 
       cards: ["images/point5-1.jpg", "images/point5-2.jpg", "images/point5-3.jpg", "images/point5-4.jpg", "images/point5-5.jpg", "images/point5-6.jpg", "images/point5-7.jpg", "images/point5-8.jpg", "images/point5-9.jpg", "images/point5-10.jpg", "images/point5-11.jpg", "images/point5-12.jpg"],
-      audioUrl: "audio/point-5.mp3", audioTime: "2:00" 
+      audioUrl: "audio/point-5.mp3", audioTime: "2:03" 
     },
     { 
       coords: [-113, 16], id: "route-point-6", stepIndex: 5, 
       iconUrl: "icons/icon-6.png", size: [46, 61], 
       title: "Суннитская мечеть", 
       cards: ["images/point6-1.jpg", "images/point6-2.jpg", "images/point6-3.jpg", "images/point6-4.jpg", "images/point6-5.jpg", "images/point6-6.jpg", "images/point6-7.jpg"],
-      audioUrl: "audio/point-6.mp3", audioTime: "1:15" 
+      audioUrl: "audio/point-6.mp3", audioTime: "2:31" 
     },
     { 
       coords: [-93, 57],  id: "route-point-7", stepIndex: 6, 
       iconUrl: "icons/icon-7.png", size: [109, 41], 
       title: "Проспект Мира, начало", 
       cards: ["images/point7-1.jpg", "images/point7-2.jpg", "images/point7-3.jpg", "images/point7-4.jpg", "images/point7-5.jpg", "images/point7-6.jpg", "images/point7-7.jpg", "images/point7-8.jpg", "images/point7-9.jpg"],
-      audioUrl: "audio/point-7.mp3", audioTime: "1:30" 
+      audioUrl: "audio/point-7.mp3", audioTime: "4:23" 
     },
     { 
       coords: [-96, 60],  id: "info-museum", stepIndex: 7,
       iconUrl: "icons/info-icon.png", size: [24, 28], 
       title: "Национальный музей и лабиринт Шырдона", 
       cards: ["images/point8-1.jpg", "images/point8-2.jpg", "images/point8-3.jpg", "images/point8-4.jpg", "images/point8-5.jpg", "images/point8-6.jpg"],
-      audioUrl: "audio/point-8.mp3", audioTime: "1:50" 
+      audioUrl: "audio/point-8.mp3", audioTime: "2:49" 
     },
     { 
       coords: [-83, 59],  id: "route-point-9", stepIndex: 8, 
       iconUrl: "icons/icon-8.png", size: [60, 54], 
       title: "Общество взаимного кредита", 
       cards: ["images/point9-1.jpg", "images/point9-2.jpg", "images/point9-3.jpg", "images/point9-4.jpg", "images/point9-5.jpg"],
-      audioUrl: "audio/point-9.mp3", audioTime: "2:05" 
+      audioUrl: "audio/point-9.mp3", audioTime: "2:06" 
     },
     { 
       coords: [-81, 67],  id: "route-point-10", stepIndex: 9, 
       iconUrl: "icons/icon-9.png", size: [63, 53], 
       title: "Гостиница Париж", 
       cards: ["images/point10-1.jpg", "images/point10-2.jpg", "images/point10-3.jpg"],
-      audioUrl: "audio/point-10.mp3", audioTime: "1:10" 
+      audioUrl: "audio/point-10.mp3", audioTime: "2:06" 
     },
     { 
       coords: [-70, 65],  id: "route-point-11", stepIndex: 10, 
       iconUrl: "icons/icon-10.png", size: [73, 45], 
       title: "Художественный музей М.Туганова", 
       cards: ["images/point11-1.jpg", "images/point11-2.jpg", "images/point11-3.jpg", "images/point11-4.jpg", "images/point11-5.jpg", "images/point11-6.jpg"],
-      audioUrl: "audio/point-11.mp3", audioTime: "1:45" 
+      audioUrl: "audio/point-11.mp3", audioTime: "2:18" 
     },
     { 
       coords: [-75, 59],  id: "route-point-12", stepIndex: 11, 
       iconUrl: "icons/icon-11.png", size: [71, 50], 
       title: "Гостиница Империал и Кинематограф Пате", 
       cards: ["images/point12-1.jpg", "images/point12-2.jpg", "images/point12-3.jpg", "images/point12-4.jpg", "images/point12-5.jpg", "images/point12-6.jpg"],
-      audioUrl: "audio/point-12.mp3", audioTime: "2:20" 
+      audioUrl: "audio/point-12.mp3", audioTime: "3:20" 
     },
     { 
       coords: [-65, 55],  id: "route-point-13", stepIndex: 12, 
       iconUrl: "icons/icon-12.png", size: [69, 53], 
       title: "Нарт Сослан", 
       cards: ["images/point13-1.jpg", "images/point13-2.jpg", "images/point13-3.jpg", "images/point13-4.jpg", "images/point13-5.jpg"],
-      audioUrl: "audio/point-13.mp3", audioTime: "1:25" 
+      audioUrl: "audio/point-13.mp3", audioTime: "2:41" 
     },
     { 
       coords: [-55, 51],  id: "route-point-14", stepIndex: 13, 
       iconUrl: "icons/icon-13.png", size: [83, 42], 
       title: "Русский театр и Площадь Ленина", 
       cards: ["images/point14-1.jpg", "images/point14-2.jpg", "images/point14-3.jpg", "images/point14-4.jpg"],
-      audioUrl: "audio/point-14.mp3", audioTime: "2:00" 
+      audioUrl: "audio/point-14.mp3", audioTime: "2:09" 
     },
     { 
       coords: [-33, 61],  id: "route-point-15", stepIndex: 14, 
       iconUrl: "icons/icon-14.png", size: [66, 45], 
       title: "Торговый дом", 
       cards: ["images/point15-1.jpg", "images/point15-2.jpg", "images/point15-3.jpg"],
-      audioUrl: "audio/point-14.mp3", audioTime: "2:00" 
+      audioUrl: "audio/point-14.mp3", audioTime: "3:07" 
     }
   ];
 
