@@ -304,13 +304,16 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  width: 207px; /* 42 палочки * 2px + 41 интервал * 3px = 207px */
+  width: 207px;
+  height: 32px; /* Фиксированная высота для корректного расчета % у span */
+  cursor: pointer;
 }
 
 .waveform span {
-  width: 2px; /* Целое значение предотвращает округление */
+  width: 2px;
   background: #a8a299;
   border-radius: 1px;
+  transition: background 0.15s ease;
 }
 
 .waveform span.active {
