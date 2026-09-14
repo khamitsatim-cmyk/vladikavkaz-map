@@ -847,7 +847,7 @@
   var activeCount = Math.floor(progress * bars.length);
 
   bars.forEach(function(bar, index) {
-    if (index <= activeCount) {
+    if (index < activeCount) {
       bar.classList.add('active');
     } else {
       bar.classList.remove('active');
