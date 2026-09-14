@@ -299,12 +299,13 @@
   box-shadow: none !important;
 }
 
-/* Волна растягивается на всю свободную ширину (синяя рамка) */
+/* Волна аудиотрека */
 .waveform {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Равномерно распределяет палочки по всей длине */
-  flex: 1;                         /* Занимает все свободное место от кнопки до таймера */
+  gap: 2.6px;            /* Строго 2.6px между палочками */
+  width: 236px;          /* Фиксированная ширина из Figma */
+  flex-shrink: 0;
   height: 32px;
   cursor: pointer;
 }
@@ -320,15 +321,14 @@
   background: #ff6d4b;
 }
 
-/* Таймер */
+/* Таймер прижимается к правому краю (8px до края белой плашки) */
 .audio-time {
   font-size: 13px;
   color: #222222;
   font-family: 'Manrope', sans-serif;
   font-weight: 500;
-  flex-shrink: 0;          /* Запрещает сжатие текста */
-  text-align: right;
-  /* 8px до края белой плашки берется из padding: 8px у .audio-player */
+  margin-left: auto;      
+  flex-shrink: 0;
 }
 
     .btn-primary {
@@ -732,7 +732,13 @@
   var waveformContainer = document.getElementById('waveform');
   var audioTimeSpan = document.getElementById('audio-time');
 
-  var barHeights = [35, 55, 80, 45, 95, 60, 40, 75, 50, 85, 65, 40, 100, 55, 70, 45, 80, 60, 40, 90, 65, 50, 75, 40, 30];
+  // Массив из 42 элементов для точного закрашивания ширины 236px с зазорами 2.6px
+  var barHeights = [
+    30, 45, 65, 40, 75, 90, 55, 35, 70, 85, 
+    40, 65, 95, 50, 30, 60, 80, 45, 70, 90, 
+    55, 35, 65, 85, 40, 75, 95, 50, 30, 60, 
+    80, 45, 70, 90, 55, 35, 65, 45, 30, 50, 40, 25
+  ];
 
   function renderWaveform() {
     waveformContainer.innerHTML = '';
@@ -839,36 +845,36 @@
     bars.forEach(b => b.classList.remove('active'));
   }
 
- audioElement.addEventListener('timeupdate', function() {
-  if (!audioElement.duration) return;
-  var progress = audioElement.currentTime / audioElement.duration;
-  var bars = waveformContainer.querySelectorAll('span');
-  var activeCount = Math.floor(progress * bars.length);
+  audioElement.addEventListener('timeupdate', function() {
+    if (!audioElement.duration) return;
+    var progress = audioElement.currentTime / audioElement.duration;
+    var bars = waveformContainer.querySelectorAll('span');
+    var activeCount = Math.floor(progress * bars.length);
 
-  bars.forEach(function(bar, index) {
-    if (index < activeCount) {
-      bar.classList.add('active');
-    } else {
-      bar.classList.remove('active');
-    }
+    bars.forEach(function(bar, index) {
+      if (index < activeCount) {
+        bar.classList.add('active');
+      } else {
+        bar.classList.remove('active');
+      }
+    });
+
+    // ОБРАТНЫЙ ОТСЧЕТ (ВНУТРИ timeupdate)
+    var remainingTime = audioElement.duration - audioElement.currentTime;
+    var mins = Math.floor(remainingTime / 60);
+    var secs = Math.floor(remainingTime % 60);
+    audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
   });
 
-  // ОБРАТНЫЙ ОТСЧЕТ (ВНУТРИ timeupdate)
-  var remainingTime = audioElement.duration - audioElement.currentTime;
-  var mins = Math.floor(remainingTime / 60);
-  var secs = Math.floor(remainingTime % 60);
-  audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
-});
+  // ПОКАЗ ВРЕМЕНИ ПРИ ЗАГРУЗКЕ (СНАРУЖИ timeupdate)
+  audioElement.addEventListener('loadedmetadata', function() {
+    if (!audioElement.duration) return;
+    var mins = Math.floor(audioElement.duration / 60);
+    var secs = Math.floor(audioElement.duration % 60);
+    audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+  });
 
-// ПОКАЗ ВРЕМЕНИ ПРИ ЗАГРУЗКЕ (СНАРУЖИ timeupdate)
-audioElement.addEventListener('loadedmetadata', function() {
-  if (!audioElement.duration) return;
-  var mins = Math.floor(audioElement.duration / 60);
-  var secs = Math.floor(audioElement.duration % 60);
-  audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
-});
-
-audioElement.addEventListener('ended', resetAudioState);
+  audioElement.addEventListener('ended', resetAudioState);
 
   document.querySelector('.sheet-content').addEventListener('click', function(e) {
     if (sheet.classList.contains('show-peek') && 
