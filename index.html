@@ -266,14 +266,13 @@
 }
 
     /* Аудиоплеер */
-   /* Аудиоплеер */
 .audio-player {
   background: #ffffff;
   border-radius: 20px;
-  padding: 8px;            /* Ровно 8px отступы от всех краев плашки */
+  padding: 8px;            /* Ровно 8px отступы от краев плашки со всех сторон */
   display: flex;
   align-items: center;
-  gap: 12px;               /* 12px между кнопкой и волной */
+  gap: 12px;               /* Расстояние между элементами внутри */
   margin-top: 16px;
   box-sizing: border-box;
 }
@@ -293,7 +292,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Убираем заливку и подсветку при нажатии/фокусе */
 .play-btn:active,
 .play-btn:focus {
   background: transparent !important;
@@ -301,12 +299,12 @@
   box-shadow: none !important;
 }
 
+/* Волна растягивается на всю свободную ширину (синяя рамка) */
 .waveform {
   display: flex;
   align-items: center;
-  gap: 3px;
-  width: 236px;            /* Фиксированная ширина волны 236px */
-  flex: 0 0 236px;
+  justify-content: space-between; /* Равномерно распределяет палочки по всей длине */
+  flex: 1;                         /* Занимает все свободное место от кнопки до таймера */
   height: 32px;
   cursor: pointer;
 }
@@ -322,14 +320,15 @@
   background: #ff6d4b;
 }
 
+/* Таймер */
 .audio-time {
   font-size: 13px;
   color: #222222;
   font-family: 'Manrope', sans-serif;
   font-weight: 500;
-  min-width: 32px;
+  flex-shrink: 0;          /* Запрещает сжатие текста */
   text-align: right;
-  margin-left: auto;       /* Авто-отступ прижимает таймер вправо к 8px padding */
+  /* 8px до края белой плашки берется из padding: 8px у .audio-player */
 }
 
     .btn-primary {
