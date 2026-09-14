@@ -303,15 +303,15 @@
 .waveform {
   display: flex;
   align-items: center;
-  gap: 2.6px;            /* Строго 2.6px между палочками */
-  width: 236px;          /* Фиксированная ширина из Figma */
+  gap: 3px;              /* Расстояние между палочками */
+  width: 228px;          /* Суммарная ширина под 42 палочки */
   flex-shrink: 0;
   height: 32px;
   cursor: pointer;
 }
 
 .waveform span {
-  width: 3px;
+  width: 2.5px;          /* Ширина каждой палочки */
   background: #a8a299;
   border-radius: 2px;
   transition: background 0.15s ease;
