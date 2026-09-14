@@ -266,17 +266,21 @@
 }
 
     /* Аудиоплеер */
-    .audio-player {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 16px;
-    }
+   /* Аудиоплеер */
+.audio-player {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 8px;            /* Ровно 8px отступы от всех краев плашки */
+  display: flex;
+  align-items: center;
+  gap: 12px;               /* 12px между кнопкой и волной */
+  margin-top: 16px;
+  box-sizing: border-box;
+}
 
-    .play-btn {
+.play-btn {
+  width: 40px;
+  height: 40px;
   background: transparent;
   border: none;
   padding: 0;
@@ -284,40 +288,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
-    .play-btn:active {
-      background: #e05535;
-    }
+/* Убираем заливку и подсветку при нажатии/фокусе */
+.play-btn:active,
+.play-btn:focus {
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
 
-    .waveform {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      flex: 1;
-      height: 32px;
-      cursor: pointer;
-    }
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 236px;            /* Фиксированная ширина волны 236px */
+  flex: 0 0 236px;
+  height: 32px;
+  cursor: pointer;
+}
 
-    .waveform span {
-      width: 3px;
-      background: #a8a299;
-      border-radius: 2px;
-      transition: background 0.15s ease;
-    }
+.waveform span {
+  width: 3px;
+  background: #a8a299;
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
 
-    .waveform span.active {
-      background: #ff6d4b;
-    }
+.waveform span.active {
+  background: #ff6d4b;
+}
 
-    .audio-time {
-      font-size: 13px;
-      color: #222222;
-      font-family: 'Manrope', sans-serif;
-      font-weight: 500;
-      min-width: 32px;
-      text-align: right;
-    }
+.audio-time {
+  font-size: 13px;
+  color: #222222;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  min-width: 32px;
+  text-align: right;
+  margin-left: auto;       /* Авто-отступ прижимает таймер вправо к 8px padding */
+}
 
     .btn-primary {
       width: 100%;
