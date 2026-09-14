@@ -827,26 +827,36 @@
     bars.forEach(b => b.classList.remove('active'));
   }
 
-  audioElement.addEventListener('timeupdate', function() {
-    if (!audioElement.duration) return;
-    var progress = audioElement.currentTime / audioElement.duration;
-    var bars = waveformContainer.querySelectorAll('span');
-    var activeCount = Math.floor(progress * bars.length);
+ audioElement.addEventListener('timeupdate', function() {
+  if (!audioElement.duration) return;
+  var progress = audioElement.currentTime / audioElement.duration;
+  var bars = waveformContainer.querySelectorAll('span');
+  var activeCount = Math.floor(progress * bars.length);
 
-    bars.forEach(function(bar, index) {
-      if (index <= activeCount) {
-        bar.classList.add('active');
-      } else {
-        bar.classList.remove('active');
-      }
-    });
-
-    var mins = Math.floor(audioElement.currentTime / 60);
-    var secs = Math.floor(audioElement.currentTime % 60);
-    audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+  bars.forEach(function(bar, index) {
+    if (index <= activeCount) {
+      bar.classList.add('active');
+    } else {
+      bar.classList.remove('active');
+    }
   });
 
-  audioElement.addEventListener('ended', resetAudioState);
+  // ОБРАТНЫЙ ОТСЧЕТ (ВНУТРИ timeupdate)
+  var remainingTime = audioElement.duration - audioElement.currentTime;
+  var mins = Math.floor(remainingTime / 60);
+  var secs = Math.floor(remainingTime % 60);
+  audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+});
+
+// ПОКАЗ ВРЕМЕНИ ПРИ ЗАГРУЗКЕ (СНАРУЖИ timeupdate)
+audioElement.addEventListener('loadedmetadata', function() {
+  if (!audioElement.duration) return;
+  var mins = Math.floor(audioElement.duration / 60);
+  var secs = Math.floor(audioElement.duration % 60);
+  audioTimeSpan.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+});
+
+audioElement.addEventListener('ended', resetAudioState);
 
   document.querySelector('.sheet-content').addEventListener('click', function(e) {
     if (sheet.classList.contains('show-peek') && 
