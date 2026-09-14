@@ -303,18 +303,14 @@
 .waveform {
   display: flex;
   align-items: center;
-  gap: 3px;              /* Расстояние между палочками */
-  width: 228px;          /* Суммарная ширина под 42 палочки */
-  flex-shrink: 0;
-  height: 32px;
-  cursor: pointer;
+  gap: 3px;
+  width: 207px; /* 42 палочки * 2px + 41 интервал * 3px = 207px */
 }
 
 .waveform span {
-  width: 2.5px;          /* Ширина каждой палочки */
+  width: 2px; /* Целое значение предотвращает округление */
   background: #a8a299;
-  border-radius: 2px;
-  transition: background 0.15s ease;
+  border-radius: 1px;
 }
 
 .waveform span.active {
