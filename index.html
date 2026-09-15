@@ -303,16 +303,17 @@
 .waveform {
   display: flex;
   align-items: center;
-  gap: 3px;
-  width: 207px;
-  height: 32px; /* Фиксированная высота для корректного расчета % у span */
+  gap: 3px;              /* Расстояние между палочками */
+  width: 231px;          /* Точная ширина под 39 палочек */
+  height: 32px;          /* Фиксированная высота для работы высоты в % */
+  flex-shrink: 0;
   cursor: pointer;
 }
 
 .waveform span {
-  width: 2px;
+  width: 3px;            /* Ширина палочки */
   background: #a8a299;
-  border-radius: 1px;
+  border-radius: 2px;
   transition: background 0.15s ease;
 }
 
@@ -736,7 +737,7 @@
     30, 45, 65, 40, 75, 90, 55, 35, 70, 85, 
     40, 65, 95, 50, 30, 60, 80, 45, 70, 90, 
     55, 35, 65, 85, 40, 75, 95, 50, 30, 60, 
-    80, 45, 70, 90, 55, 35, 65, 45, 30, 50, 40, 25
+    80, 45, 70, 90, 55, 35, 65, 45, 30
   ];
 
   function renderWaveform() {
