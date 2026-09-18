@@ -633,7 +633,7 @@
     },
     { 
       coords: [-96, 60],  id: "info-museum", stepIndex: 7,
-      iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="%23000000"/><text x="14" y="20" font-family="sans-serif" font-weight="bold" font-size="16" fill="%23ffffff" text-anchor="middle">i</text></svg>', 
+      iconUrl: "icons/info-icon.png", 
       size: [24, 28], 
       title: "Национальный музей и лабиринт Шырдона", 
       cards: ["images/point8-1.jpg", "images/point8-2.jpg", "images/point8-3.jpg", "images/point8-4.jpg", "images/point8-5.jpg", "images/point8-6.jpg"],
@@ -753,12 +753,12 @@
   // ==========================================
   // 3. ИНФО-ИКОНКА ЧЕРЕЗ ВЕКТОРНЫЙ SVG DATA-URI (Гарантия отображения на мобильных)
   // ==========================================
-  var infoIcon = L.icon({
-    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23000000"/><text x="16" y="22" font-family="Arial, sans-serif" font-weight="bold" font-size="18" fill="%23ffffff" text-anchor="middle">i</text></svg>',
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
-    popupAnchor: [0, -28]
-  });
+var infoIcon = L.icon({
+  iconUrl: 'icons/info-icon.png', // Укажи точное название твоего файла
+  iconSize: [28, 28],            // Укажи желаемый размер твоей иконки в пикселях
+  iconAnchor: [14, 28],
+  popupAnchor: [0, -28]
+});
 
   var secondaryPoints = [
     { coords: [-181, 54], title: "Следы барса", text: "Символизирует возрождение популяции барсов на Кавказе." },
