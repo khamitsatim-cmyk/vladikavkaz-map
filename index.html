@@ -557,26 +557,22 @@
 
   map.setMaxBounds(bounds);
 
-  var initialX = 2800;
-  var initialY = 8500;
-  var startZoom = 4.8;
-  var startCenter = map.unproject([initialX, initialY], maxZoom);
-  map.setView(startCenter, startZoom);
+  // 1. СТАРТОВАЯ ПОЗИЦИЯ: Первое место маршрута (Набережная и Исса Плиев) с крупным масштабом 5.8
+  var firstPointCoords = [-193, 55];
+  var startZoom = 5.8;
+  map.setView(firstPointCoords, startZoom);
 
   window.addEventListener('load', function() {
     setTimeout(function() { map.invalidateSize(); }, 200);
   });
 
-  var popup = L.popup();
-  map.on('click', function(e) {
-    let y = Math.round(e.latlng.lat);
-    let x = Math.round(e.latlng.lng);
-    popup.setLatLng(e.latlng).setContent("Координаты: [" + y + ", " + x + "]").openOn(map);
+  // 2. Закрытие шторки при клике по свободной области карты (определитель координат удалён)
+  map.on('click', function() {
     closeSheet();
   });
 
   // ==========================================
-  // 1. ПОЛНЫЙ СПИСОК ОСНОВНЫХ ТОЧЕК С ИНДИВИДУАЛЬНЫМИ СХЕМАМИ ПРОХОДА
+  // ПОЛНЫЙ СПИСОК ОСНОВНЫХ ТОЧЕК
   // ==========================================
   var mainRoutePoints = [
     { 
@@ -637,7 +633,8 @@
     },
     { 
       coords: [-96, 60],  id: "info-museum", stepIndex: 7,
-      iconUrl: "icons/info-icon.png", size: [24, 28], 
+      iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="%23000000"/><text x="14" y="20" font-family="sans-serif" font-weight="bold" font-size="16" fill="%23ffffff" text-anchor="middle">i</text></svg>', 
+      size: [24, 28], 
       title: "Национальный музей и лабиринт Шырдона", 
       cards: ["images/point8-1.jpg", "images/point8-2.jpg", "images/point8-3.jpg", "images/point8-4.jpg", "images/point8-5.jpg", "images/point8-6.jpg"],
       audioUrl: "audio/point-8.mp3", audioTime: "2:49",
@@ -754,13 +751,13 @@
   map.on('zoomend', updateIconSizes);
 
   // ==========================================
-  // 2. ПОЛНЫЙ СПИСОК ВТОРОСТЕПЕННЫХ ТОЧЕК
+  // 3. ИНФО-ИКОНКА ЧЕРЕЗ ВЕКТОРНЫЙ SVG DATA-URI (Гарантия отображения на мобильных)
   // ==========================================
   var infoIcon = L.icon({
-    iconUrl: 'icons/info-icon.png',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -32]
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23000000"/><text x="16" y="22" font-family="Arial, sans-serif" font-weight="bold" font-size="18" fill="%23ffffff" text-anchor="middle">i</text></svg>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -28]
   });
 
   var secondaryPoints = [
@@ -805,7 +802,7 @@
   });
 
   // ==========================================
-  // 3. ШТОРКА, СЛАЙДЕР И УПРАВЛЕНИЕ АУДИО
+  // ШТОРКА, СЛАЙДЕР И УПРАВЛЕНИЕ АУДИО
   // ==========================================
   var sheet = document.getElementById('bottom-sheet');
   var currentPointIndex = 0;
@@ -891,7 +888,6 @@
     resetAudioState();
   }
 
-  /* Навигация слайдера стрелками */
   document.getElementById('slider-prev').addEventListener('click', function(e) {
     e.stopPropagation();
     var slider = document.getElementById('cards-slider');
@@ -992,15 +988,10 @@
 
   openRouteBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    
-    // Получаем текущую выбранную точку из массива
     var currentPoint = mainRoutePoints[currentPointIndex];
-    
-    // Подставляем изображение схемы, привязанное к текущей точке
     if (currentPoint && currentPoint.routeMap) {
       routeModalImage.src = currentPoint.routeMap;
     }
-    
     routeModal.classList.add('active');
   });
 
